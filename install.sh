@@ -16,6 +16,15 @@ npm install pm2@latest -g
 # install mysql
 sudo apt install mysql-client-core-8.0
 
+# install deploy-agent
+sudo su
+sudo apt-get update
+sudo apt-get install ruby-full
+
+wget https://aws-codedeploy-ap-northeast-2.s3.amazonaws.com/latest/install
+chmod +x ./install
+sudo ./install auto
+
 # installed check
 node -v
 npm -v

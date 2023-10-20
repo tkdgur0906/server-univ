@@ -1,14 +1,15 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+# 이 워크플로우는 Node의 의존성을 깔끔하게 설치하고, 캐시하여 복원하며, 소스 코드를 빌드하고 다양한 Node 버전에서 테스트를 실행합니다.
+# 자세한 정보는 다음을 참조하세요: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
 name: deploy
-# 해당 브랜치가 push 될 때 해당 액션을 실행
+# main 브랜치에 push 혹은 pull request가 있을 때 워크플로우를 실행
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-# 액션을 실행시키는 runner의 운영체제
+
+# 워크플로우가 실행될 운영체제 지정
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,38 +17,38 @@ jobs:
     strategy:
       matrix:
         node-version: [14.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-    #액션의 실행 수행내용, 단계별로 실행된다.
+        # 지원되는 Node.js 릴리스 일정에 대해서는 https://nodejs.org/en/about/releases/를 참조하세요.
+
+    # 워크플로우의 실행 단계
     steps:
+      # 소스 코드 체크아웃
       - name: Checkout source code.
         uses: actions/checkout@v2
 
+      # 사용할 Node.js 버전 설정
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
-      # - name: delete package-lock.json
-      #   run: rm package-lock.json
-
+      # 의존성 설치
       - name: Install dependencies
         run: npm install
 
-      # - name: build file
-      #   run: npm run build
-
+      # .env 파일 생성
       - name: create env file
-        working-directory: ./textDisplay-backend
+        working-directory: ./
         run: |
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
           
+      # 파일 및 폴더를 압축하여 server.zip으로 저장
       - name: zip distributions
-        run: zip -r server.zip . ./appspec.yml ./scripts
+        run: zip -r server.zip .
 
-
+      # AWS 인증 정보 설정
       - name: AWS configure credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -55,10 +56,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
           
-      #s3,codeDeploy 경로와 이름 알맞게 입력
+      # S3로 압축 파일 업로드
       - name: upload to S3
         run: aws s3 cp --region ap-northeast-2 ./server.zip s3://YOUR_BUCKET_NAME/public/
 
+      # AWS CodeDeploy를 사용하여 배포
       - name: deploy with AWS codeDeploy
         run: aws deploy create-deployment
           --application-name YOUR_APP_NAME_IN_CODEDEPLOY

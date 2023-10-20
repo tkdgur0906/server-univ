@@ -1,31 +1,29 @@
-#update
+# 패키지 리스트 업데이트
 sudo apt-get update
 
-# install nvm
+# nvm 설치 (Node Version Manager: 노드 버전 관리 도구)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
-nvm install --lts
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # nvm 로드
+nvm install --lts  # LTS 버전의 노드 설치
 
-# install npm
+# npm 설치 (Node Package Manager: 노드 패키지 관리 도구)
 sudo apt-get install npm -y
 
-# install pm2
+# pm2 설치 (노드 프로세스 관리 도구)
 npm install pm2@latest -g
 
-# install mysql
+# MySQL 클라이언트 설치
 sudo apt install mysql-client-core-8.0
 
-# install deploy-agent
+# codedeploy-agent 설치 (AWS CodeDeploy 에이전트)
 sudo su
 sudo apt-get update
-sudo apt-get install ruby-full
+sudo apt-get install ruby-full -y
 
 wget https://aws-codedeploy-ap-northeast-2.s3.amazonaws.com/latest/install
 chmod +x ./install
 sudo ./install auto
 
-# installed check
-node -v
-npm -v
-mysql
+# deploy 찾지 못할 경우 재시작
+sudo service codedeploy-agent restart

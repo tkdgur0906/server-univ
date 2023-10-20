@@ -1,3 +1,5 @@
+-- EC2에서 RDS 접속해서 초기 텍스트 입력
+-- mysql -h DB엔드포인트 -u admin -p 
 use texts;
 CREATE TABLE texts (id INT AUTO_INCREMENT PRIMARY KEY, text TEXT NOT NULL, username VARCHAR(255) NOT NULL);
 INSERT INTO texts (text, username) VALUES('언제나 현재에 집중할수 있다면 행복할것이다...아마도...', '파울로 코엘료');
